@@ -9,11 +9,10 @@ from db.session import AsyncSession_
 
 router = APIRouter(prefix="/categories", tags=["categories"])
 
-category_name_reg = r"^[a-z]*$"
 CategoryId = Annotated[int, Path(gt=0)]
 CategoryBody = Annotated[schemas.CategoryCreate, Body()]
 CategoryNameQuery = Annotated[
-    str | None, Query(min_length=2, max_length=20, regex=category_name_reg)
+    str | None, Query(min_length=2, max_length=20, regex=r"^[a-z]*$")
 ]
 CategorySortQuery = Annotated[
     str | None, Query(min_length=3, max_length=10, regex=r"^[+-][a-z]*$")
@@ -58,7 +57,7 @@ async def create_category(category: CategoryBody, session: AsyncSession_):
 
 
 @router.put("/{category_id}", status_code=status.HTTP_202_ACCEPTED)
-async def delete_catagory(
+async def delete_category(
         session: AsyncSession_, category_id: CategoryId, category: CategoryBody
 ):
     await crud.Category.put(
