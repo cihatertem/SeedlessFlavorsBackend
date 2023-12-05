@@ -13,8 +13,6 @@ RUN pip install --upgrade --no-cache-dir pip \
     && pip install --upgrade --no-cache-dir -r /tmp/requirements.txt \
     && rm /tmp/requirements.txt
 
-ENV PATH="/venv/bin:$PATH"
-
 COPY ./app /app
 
 # Dev stage
@@ -31,7 +29,7 @@ USER fastapi
 
 WORKDIR /app
 
-CMD ["uvicorn", "main:app", "--reload", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "main:app", "--reload", "--host", "0.0.0.0", "--port", "80"]
 
 # Prod stage
 FROM base as prod
@@ -40,4 +38,4 @@ RUN chown -R fastapi:fastapi /app
 
 USER fastapi
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80", "--workers", "2"]

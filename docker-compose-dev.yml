@@ -18,13 +18,14 @@ services:
       context: .
       dockerfile: Dockerfile
       target: dev
+    init: true
     container_name: sf_fastapi_backend
     env_file:
       - environments/.env.fastapi
     depends_on:
       - db
     ports:
-      - "8000:8000"
+      - "8000:80"
     volumes:
       - ./app:/app
 

@@ -1,9 +1,17 @@
 # app/core/config.py
-from pydantic import BaseSettings
+from pydantic_settings import SettingsConfigDict, BaseSettings
 
 
-class Settings(BaseSettings):
-    database_url: str
+class BaseConfig(BaseSettings):
+    model_config = SettingsConfigDict(env_file=".env.fastapi", extra="allow")
 
 
-settings = Settings()
+class GlobalConfig(BaseConfig):
+    POSTGRES_DB: str
+    POSTGRES_USER: str
+    POSTGRES_PASSWORD: str
+    POSTGRES_HOST: str
+    POSTGRES_PORT: int
+
+
+settings = GlobalConfig()
