@@ -7,7 +7,28 @@ from sqlalchemy.exc import IntegrityError
 from api.api_v1.router import router
 from db.session import lifespan
 
-app = FastAPI(lifespan=lifespan)
+description = """Seedless Flavors API for website and mobile app.\n
+[Website](https://www.seedlessflavors.com) | 
+[Youtube Channel](https://www.youtube.com/@SeedlessFlavors/featured) | 
+[X](https://x.com/SeedlessFlavors) | 
+[Instagram](https://www.instagram.com/seedlessflavors)
+"""
+
+app = FastAPI(
+    title="Seedless Flavors API",
+    description=description,
+    version="0.0.1",
+    contact={
+        "name": "Cihat Ertem",
+        "url": "https://cihatertem.dev",
+        "email": "cihatertem+seedlessflavors@gmail.com",
+    },
+    license_info={
+        "name": "GNU GENERAL PUBLIC LICENSE Version 3",
+        "url": "https://www.gnu.org/licenses/gpl-3.0.html",
+    },
+    lifespan=lifespan,
+)
 
 app.include_router(router)
 

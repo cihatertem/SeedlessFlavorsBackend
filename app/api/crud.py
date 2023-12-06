@@ -4,6 +4,7 @@ from sqlalchemy import select, delete, desc, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from db import models
+from db.session import AsyncSession_
 from . import schemas, exceptions
 
 
@@ -23,22 +24,23 @@ def sort_category_by_name_or_date(sort_by, stmt):
 
 
 class Category:
-    @staticmethod
-    async def get_all(session: AsyncSession, sort_by: str = None):
+    def __init__(self, session: AsyncSession_):
+        self.session: AsyncSession = session
+
+    async def get_all(self, sort_by: str = None):
         stmt = select(models.Category)
 
         if sort_by:
             stmt = sort_category_by_name_or_date(sort_by=sort_by, stmt=stmt)
 
-        result = await session.execute(stmt)
+        result = await self.session.execute(stmt)
         return result.scalars().all()
 
-    @staticmethod
-    async def get_category_by_id(session: AsyncSession, category_id: int):
+    async def get_category_by_id(self, category_id: int):
         stmt = select(models.Category).where(
             models.Category.category_id == category_id
         )
-        result = await session.execute(stmt)
+        result = await self.session.execute(stmt)
         row = result.scalar()
 
         if row is None:
@@ -48,12 +50,11 @@ class Category:
 
         return row
 
-    @staticmethod
-    async def get_category_by_name(session: AsyncSession, category_name: str):
+    async def get_category_by_name(self, category_name: str):
         stmt = select(models.Category).where(
             models.Category.name == category_name.lower().strip()
         )
-        result = await session.execute(stmt)
+        result = await self.session.execute(stmt)
         row = result.scalar()
 
         if row is None:
@@ -65,35 +66,32 @@ class Category:
 
         return row
 
-    @staticmethod
-    async def create(session: AsyncSession, category: schemas.CategoryCreate):
+    async def create(self, category: schemas.CategoryCreate):
         new_category = models.Category(name=category.name)
-        session.add(new_category)
-        await session.commit()
-        await session.refresh(new_category)
+        self.session.add(new_category)
+        await self.session.commit()
+        await self.session.refresh(new_category)
         return new_category
 
-    @staticmethod
-    async def put(session: AsyncSession, category_id: int, name: str):
+    async def put(self, category_id: int, name: str):
         stmt = (
             update(models.Category)
             .where(models.Category.category_id == category_id)
             .values(name=name)
         )
 
-        await session.execute(stmt)
-        await session.commit()
+        await self.session.execute(stmt)
+        await self.session.commit()
 
-    @staticmethod
-    async def delete(session: AsyncSession, category_id: int):
+    async def delete(self, category_id: int):
         stmt = delete(models.Category).where(
             models.Category.category_id == category_id
         )
-        result = await session.execute(stmt)
+        result = await self.session.execute(stmt)
 
         if result.rowcount == 0:
             raise exceptions.ItemNotFound(
                 detail={"message": f"Item not found by id '{category_id}'."},
             )
 
-        await session.commit()
+        await self.session.commit()

@@ -1,9 +1,10 @@
 # app/core/config.py
-from pydantic_settings import SettingsConfigDict, BaseSettings
+from pydantic_settings import BaseSettings
 
 
 class BaseConfig(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env.fastapi", extra="allow")
+    # model_config = SettingsConfigDict(env_file=".env.fastapi", extra="allow")
+    pass
 
 
 class GlobalConfig(BaseConfig):
