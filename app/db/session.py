@@ -2,7 +2,6 @@
 from contextlib import asynccontextmanager
 from typing import Annotated
 
-from core.config import settings
 from fastapi import FastAPI, Depends
 from sqlalchemy import URL
 from sqlalchemy.ext.asyncio import (
@@ -11,6 +10,7 @@ from sqlalchemy.ext.asyncio import (
     AsyncSession,
 )
 
+from core.config import settings
 from .models import Base
 
 DATABASE_URL = URL.create(

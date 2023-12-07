@@ -1,7 +1,6 @@
-from pathlib import Path
 from typing import Annotated
 
-from fastapi import APIRouter, Body, Query, status, Depends
+from fastapi import APIRouter, Body, Query, status, Depends, Path
 from fastapi.responses import JSONResponse
 
 from api import schemas
@@ -25,9 +24,9 @@ CategorySortQuery = Annotated[
     Query(
         min_length=3,
         max_length=10,
-        regex=r"^[-]*[a-z]*$",
+        pattern=r"^[-]*[a-z]*$",
         description="use 'name' or 'date' for ascending order and add start "
-                    "'-' for descending order. ",
+        "'-' for descending order. ",
         examples=[
             {"?sort_by": "name"},
             {"?sort_by": "-name"},
@@ -48,9 +47,9 @@ CategorySortQuery = Annotated[
     response_model=list[schemas.Category] | schemas.Category,
 )
 async def get_all_categories_or_by_name(
-        operation: CategoryOperations,
-        name: CategoryNameQuery = None,
-        sort_by: CategorySortQuery = None,
+    operation: CategoryOperations,
+    name: CategoryNameQuery = None,
+    sort_by: CategorySortQuery = None,
 ):
     if name is not None:
         return await operation.get_category_by_name(category_name=name)
@@ -64,7 +63,7 @@ async def get_all_categories_or_by_name(
     status_code=status.HTTP_200_OK,
 )
 async def get_category_by_id(
-        operation: CategoryOperations, category_id: CategoryId
+    operation: CategoryOperations, category_id: CategoryId
 ):
     return await operation.get_category_by_id(category_id=category_id)
 
@@ -75,16 +74,16 @@ async def get_category_by_id(
     status_code=status.HTTP_201_CREATED,
 )
 async def create_category(
-        operation: CategoryOperations, category: CategoryBody
+    operation: CategoryOperations, category: CategoryBody
 ):
     return await operation.create(category=category)
 
 
 @router.put("/{category_id}", status_code=status.HTTP_202_ACCEPTED)
 async def delete_category(
-        operation: CategoryOperations,
-        category_id: CategoryId,
-        category: CategoryBody,
+    operation: CategoryOperations,
+    category_id: CategoryId,
+    category: CategoryBody,
 ):
     await operation.put(category_id=category_id, name=category.name)
 
@@ -96,7 +95,7 @@ async def delete_category(
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def delete_category(
-        operation: CategoryOperations, category_id: CategoryId
+    operation: CategoryOperations, category_id: CategoryId
 ):
     await operation.delete(category_id=category_id)
     return JSONResponse({"message": f"Category with {category_id} deleted!"})

@@ -39,3 +39,18 @@ RUN chown -R fastapi:fastapi /app
 USER fastapi
 
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80", "--workers", "2"]
+
+# Test stage
+FROM dev as test
+
+ENV PATH="/app:/tests:$PATH"
+
+COPY tests /tests
+
+COPY pytest.ini /
+
+WORKDIR /
+
+USER root
+
+CMD ["pytest"]
