@@ -4,7 +4,7 @@ from fastapi import FastAPI, status, Request
 from fastapi.responses import JSONResponse
 from sqlalchemy.exc import IntegrityError
 
-from api.api_v1.router import router
+from api.v1.router import router
 from db.session import lifespan
 
 description = """Seedless Flavors API for website and mobile app.\n
@@ -39,10 +39,7 @@ async def sqlalchemy_integrity_error_handler(
 ):
     return JSONResponse(
         status_code=status.HTTP_400_BAD_REQUEST,
-        content={
-            "message": f"Oops! {exc.__class__.__name__}. {exc.params} is "
-                       f"already exist!"
-        },
+        content={"message": f"Oops! {exc.__class__.__name__} error!"},
     )
 
 

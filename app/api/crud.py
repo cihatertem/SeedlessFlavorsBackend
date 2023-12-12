@@ -73,15 +73,23 @@ class Category:
         await self.session.refresh(new_category)
         return new_category
 
-    async def put(self, category_id: int, name: str):
+    async def update(self, category_id: int, name: str):
         stmt = (
             update(models.Category)
             .where(models.Category.category_id == category_id)
             .values(name=name)
         )
 
-        await self.session.execute(stmt)
+        result = await self.session.execute(stmt)
+
+        if result.rowcount == 0:
+            raise exceptions.ItemNotFound(
+                detail={"message": f"Item not found by id '{category_id}'."}
+            )
+
         await self.session.commit()
+
+        return {"message": "Category updated!"}
 
     async def delete(self, category_id: int):
         stmt = delete(models.Category).where(

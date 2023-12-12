@@ -11,7 +11,7 @@ from sqlalchemy.ext.asyncio import (
 )
 
 from core.config import settings
-from .models import Base
+from db import models
 
 DATABASE_URL = URL.create(
     drivername="postgresql+asyncpg",
@@ -25,7 +25,7 @@ DATABASE_URL = URL.create(
 engine = create_async_engine(
     DATABASE_URL,
     pool_pre_ping=True,
-    echo=True,
+    # echo=True,
 )
 
 async_session = async_sessionmaker(
@@ -46,5 +46,5 @@ AsyncSession_ = Annotated[AsyncSession, Depends(get_session)]
 async def lifespan(app: FastAPI):
     # TODO after alembic setup this lifespan will be removed!
     async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+        await conn.run_sync(models.Base.metadata.create_all)
         yield

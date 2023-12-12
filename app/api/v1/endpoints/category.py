@@ -1,10 +1,10 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Body, Query, status, Depends, Path
-from fastapi.responses import JSONResponse
 
 from api import schemas
 from api.crud import Category
+from core import auth
 
 router = APIRouter(prefix="/categories", tags=["categories"])
 
@@ -74,20 +74,22 @@ async def get_category_by_id(
     status_code=status.HTTP_201_CREATED,
 )
 async def create_category(
-    operation: CategoryOperations, category: CategoryBody
+    operation: CategoryOperations,
+    category: CategoryBody,
+    # token: auth.TokenAnnotation,
+    current_user: auth.CurrentUserAnnotation,
 ):
     return await operation.create(category=category)
 
 
-@router.put("/{category_id}", status_code=status.HTTP_202_ACCEPTED)
-async def delete_category(
+@router.put("/{category_id}", status_code=status.HTTP_200_OK)
+async def update_category(
     operation: CategoryOperations,
     category_id: CategoryId,
     category: CategoryBody,
+    current_user: auth.CurrentUserAnnotation,
 ):
-    await operation.put(category_id=category_id, name=category.name)
-
-    return JSONResponse({"message": "Category updated!"})
+    return await operation.update(category_id=category_id, name=category.name)
 
 
 @router.delete(
@@ -95,7 +97,8 @@ async def delete_category(
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def delete_category(
-    operation: CategoryOperations, category_id: CategoryId
+    operation: CategoryOperations,
+    category_id: CategoryId,
+    current_user: auth.CurrentUserAnnotation,
 ):
     await operation.delete(category_id=category_id)
-    return JSONResponse({"message": f"Category with {category_id} deleted!"})

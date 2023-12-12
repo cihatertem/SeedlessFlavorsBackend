@@ -13,6 +13,8 @@ class GlobalConfig(BaseConfig):
     POSTGRES_PASSWORD: str
     POSTGRES_HOST: str
     POSTGRES_PORT: int
+    SECRET_KEY: str  # openssl rand -base64 32
+    PIN: str
 
 
 settings = GlobalConfig()
