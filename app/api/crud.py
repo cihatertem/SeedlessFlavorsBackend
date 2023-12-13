@@ -3,6 +3,8 @@
 from sqlalchemy import select, delete, desc, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from core import auth
+from core.config import settings
 from db import models
 from db.session import AsyncSession_
 from . import schemas, exceptions
@@ -71,6 +73,7 @@ class Category:
         self.session.add(new_category)
         await self.session.commit()
         await self.session.refresh(new_category)
+
         return new_category
 
     async def update(self, category_id: int, name: str):
@@ -103,3 +106,23 @@ class Category:
             )
 
         await self.session.commit()
+
+
+class User:
+    def __init__(self, session: AsyncSession_):
+        self.session: AsyncSession = session
+
+    async def create_user(self, user: schemas.UserCreate):
+        user_dict = user.model_dump()
+        input_pin = user_dict.pop("pin")
+
+        if input_pin != settings.PIN:
+            raise exceptions.PinError()
+
+        user_dict["password"] = auth.hash_password(user_dict["password"])
+        new_user = models.User(**user_dict)
+        self.session.add(new_user)
+        await self.session.commit()
+        await self.session.refresh(new_user)
+
+        return new_user

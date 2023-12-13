@@ -35,8 +35,11 @@ async_session = async_sessionmaker(
 
 
 async def get_session():
-    async with async_session() as session:
+    session = async_session()
+    try:
         yield session
+    finally:
+        await session.close()
 
 
 AsyncSession_ = Annotated[AsyncSession, Depends(get_session)]

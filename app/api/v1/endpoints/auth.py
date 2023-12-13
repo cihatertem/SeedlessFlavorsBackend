@@ -4,14 +4,13 @@ from asyncpg.pgproto.pgproto import timedelta
 from fastapi import APIRouter, Depends, status
 from fastapi.security import OAuth2PasswordRequestForm
 
-from api import exceptions
+from api import exceptions, crud
 from api import schemas
 from core import auth
-from core.config import settings
-from db import session, models
+from db import session
 
 FormDataAnnotation = Annotated[OAuth2PasswordRequestForm, Depends()]
-
+UserOperation = Annotated[crud.User, Depends(crud.User)]
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
@@ -35,17 +34,8 @@ async def login(form_data: FormDataAnnotation, session: session.AsyncSession_):
     response_model=schemas.UserResponse,
     status_code=status.HTTP_201_CREATED,
 )
-async def sign_up(session: session.AsyncSession_, user: schemas.UserCreate):
-    user_dict = user.model_dump()
-    input_pin = user_dict.pop("pin")
-
-    if input_pin != settings.PIN:
-        raise exceptions.PinError()
-
-    user_dict["password"] = auth.hash_password(user_dict["password"])
-    new_user = models.User(**user_dict)
-    session.add(new_user)
-    await session.commit()
-    await session.refresh(new_user)
-
-    return new_user
+async def sign_up(
+        user: schemas.UserCreate,
+        operation: UserOperation,
+):
+    return await operation.create_user(user)

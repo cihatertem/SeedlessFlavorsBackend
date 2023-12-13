@@ -36,8 +36,8 @@ def hash_password(plain_password: str) -> str:
 
 
 async def get_user_from_db(
-    session: AsyncSession,
-    username: str,
+        session: AsyncSession,
+        username: str,
 ) -> models.User | None:
     stmt = select(models.User).where(models.User.username == username)
     result = await session.execute(stmt)
@@ -47,9 +47,9 @@ async def get_user_from_db(
 
 
 async def authenticate_user(
-    session: AsyncSession,
-    username: str,
-    password: str,
+        session: AsyncSession,
+        username: str,
+        password: str,
 ) -> models.User | bool:
     user = await get_user_from_db(session, username)
 
@@ -73,8 +73,8 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
 
 
 async def get_current_user(
-    session: session.AsyncSession_,
-    token: Annotated[str, Depends(oauth2_scheme)],
+        session: session.AsyncSession_,
+        token: Annotated[str, Depends(oauth2_scheme)],
 ):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
@@ -95,4 +95,4 @@ async def get_current_user(
     return user
 
 
-CurrentUserAnnotation = Annotated["USERSCHEMA", Depends(get_current_user)]
+CurrentUserAnnotation = Annotated[models.User, Depends(get_current_user)]
