@@ -54,9 +54,9 @@ async def authenticate_user(
     user = await get_user_from_db(session, username)
 
     if user is None:
-        return False
+        raise exceptions.BadLoginRequest()
     if not verify_password(password, user.password):
-        return False
+        raise exceptions.BadLoginRequest()
 
     return user
 

@@ -123,6 +123,5 @@ class User:
         new_user = models.User(**user_dict)
         self.session.add(new_user)
         await self.session.commit()
-        await self.session.refresh(new_user)
 
         return new_user

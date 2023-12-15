@@ -3,9 +3,10 @@ import time
 import pytest
 from sqlalchemy.exc import IntegrityError
 
-from api import exceptions
-from api.crud import Category
+from api import exceptions, schemas
+from api.crud import Category, User
 from api.schemas import CategoryCreate
+from core.config import settings
 
 
 @pytest.mark.anyio
@@ -124,3 +125,22 @@ class CategoryCRUDOperationsTests:
     ):
         with pytest.raises(exceptions.ItemNotFound):
             await category.delete(123123)
+
+
+@pytest.mark.anyio
+class UserCRUDOperationsTests:
+    async def test_create_user(self, user: User):
+        user_body = schemas.UserCreate(
+            username="testuser1",
+            email="test12@example.com",
+            first_name="test12",
+            last_name="user",
+            password="aBcdef123*",
+            pin=settings.PIN,
+        )
+        new_user = await user.create_user(user_body)
+
+        assert (
+                new_user.full_name
+                == user_body.first_name + " " + user_body.last_name
+        )

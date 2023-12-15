@@ -283,7 +283,7 @@ class AuthLoginEndpointTests:
         assert response.status_code == status.HTTP_200_OK
         assert data["token_type"] == "bearer"
 
-    async def test_login_with_correct_credentials_json_body_should_raise_err(
+    async def test_login_with_json_body_should_response_err(
             self,
             async_client: AsyncClient,
             registered_user: models.User,
@@ -301,7 +301,7 @@ class AuthLoginEndpointTests:
         assert data["detail"][0]["type"] == "missing"  # username
         assert data["detail"][1]["type"] == "missing"  # password
 
-    async def test_login_with_wrong_password_should_send_err_response(
+    async def test_login_with_wrong_password_should_response_err(
             self,
             async_client: AsyncClient,
             registered_user: models.User,

@@ -39,7 +39,7 @@ ENV PATH="/app:/tests:$PATH"
 
 COPY tests /tests
 
-COPY pytest.ini /
+COPY pytest.ini setup.cfg /
 
 WORKDIR /
 

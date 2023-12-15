@@ -45,6 +45,3 @@ class User(Base, TimeStampMixin, TableNameMixin):
     @property
     def full_name(self) -> str:
         return f"{self.first_name} {self.last_name}"
-
-    def __repr__(self):
-        return f"<User: {self.full_name}>"

@@ -35,7 +35,7 @@ app.include_router(router)
 
 @app.exception_handler(IntegrityError)
 async def sqlalchemy_integrity_error_handler(
-        request: Request, exc: IntegrityError
+    request: Request, exc: IntegrityError
 ):
     return JSONResponse(
         status_code=status.HTTP_400_BAD_REQUEST,

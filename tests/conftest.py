@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 import pytest
 from httpx import AsyncClient
 from sqlalchemy.exc import IntegrityError
@@ -5,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from api import crud
 from app.main import app
+from core import auth
 from core.auth import hash_password
 from db import models
 from db.models import Base
@@ -93,8 +96,40 @@ async def access_token_header(async_client: AsyncClient) -> dict:
 
 
 @pytest.fixture
+def token_with_nonexistent_user() -> str:
+    token = auth.create_access_token({"sub": "invaliduser"})
+    return token
+
+
+@pytest.fixture
+def token_with_no_subject() -> str:
+    token = auth.create_access_token({"no-sub": "invaliduser"})
+    return token
+
+
+@pytest.fixture
+def valid_token(registered_user: models.User) -> str:
+    token = auth.create_access_token({"sub": registered_user.username})
+    return token
+
+
+@pytest.fixture
+def expired_token(registered_user: models.User) -> str:
+    token = auth.create_access_token(
+        {"sub": registered_user.username},
+        timedelta(minutes=-15),
+    )
+    return token
+
+
+@pytest.fixture
 async def category(session: AsyncSession):
     return crud.Category(session=session)
+
+
+@pytest.fixture
+async def user(session: AsyncSession):
+    return crud.User(session=session)
 
 
 @app.get("/test_integrity", tags=["tests"])

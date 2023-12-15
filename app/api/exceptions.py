@@ -27,14 +27,6 @@ class BadLoginRequest(HTTPException):
         )
 
 
-class BadTokenType(HTTPException):
-    def __init__(self):
-        super().__init__(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail={"message": "Only Bearer token type accepted!"},
-        )
-
-
 class PinError(HTTPException):
     def __init__(self):
         super().__init__(
